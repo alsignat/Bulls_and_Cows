@@ -2,48 +2,62 @@ package bullscows;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 public class Code {
 
-    private final Integer[] code;
-
-    private final HashSet<Integer> uniqueDigits;
+    private final char[] code;
+    private final int length;
+    private final HashSet<Character> uniqueDigits;
 
     public Code(String input) {
-        this.code = toIntArray(Integer.parseInt(input));
-        this.uniqueDigits = new HashSet<Integer>(List.of(code));
+        this.code = input.toCharArray();
+        this.length = code.length;
+        this.uniqueDigits = getUnique(code);
     }
 
-    public Code(int input) {
-        this.code = toIntArray(input);
-        this.uniqueDigits = new HashSet<Integer>(List.of(code));
+    public Code(int digits) {
+        this(getRandom(digits));
     }
 
-    public String printCode() {
-        return "" + code[0] + code[1] + code[2] + code[3];
+    public static String getRandom(int digits) {
+        Random generator = new Random(System.nanoTime());
+        StringBuilder number = new StringBuilder();
+        HashSet<Integer> uniques = new HashSet<>(digits);
+        int first = generator.nextInt(9) + 1;
+        number.append(first);
+        uniques.add(first);
+        while (number.length() < digits) {
+            int r = generator.nextInt(10);
+            if (!uniques.contains(r)) {
+                number.append(r);
+                uniques.add(r);
+            }
+        }
+        return number.toString();
     }
 
-    public void evaluate(int input) {
-        Integer[] inputArray = toIntArray(input);
+    public boolean evaluate(String input) {
+        char[] inputArray = input.toCharArray();
         int bulls = 0;
         int cows = 0;
-        for (int i = 0; i < 4; i++) {
-            int digit = inputArray[i];
+        for (int i = 0; i < length; i++) {
+            char digit = inputArray[i];
             if (this.code[i] == digit) bulls++;
             else if (uniqueDigits.contains(digit)) cows++;
         }
         String grade = cows + bulls == 0 ? "None. " : String.format("%d bull(s) and %d cow(s). ", bulls, cows);
-        System.out.printf("Grade: " + grade + "The secret code is %s.%n", printCode());
+        System.out.println("Grade: " + grade);
+        System.out.println(this.code);
+        return bulls == this.length;
     }
 
-    private Integer[] toIntArray(int input) {
-        Integer[] array = new Integer[4];
-        int code = input;
-        for (int i = 0; i < 4; i++) {
-            array[3 - i] = code % 10;
-            code /= 10;
-        }
-        return array;
+    private static HashSet<Character> getUnique(char[] array) {
+        return new HashSet<Character>(List.of(
+                IntStream.range(0, array.length)
+                        .mapToObj(i -> array[i])
+                        .toArray(Character[]::new)));
     }
 
 }
