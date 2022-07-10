@@ -9,14 +9,13 @@ public class Game {
 
     public void play() {
         Scanner scanner = new Scanner(System.in);
-        int input;
-        do {
-            System.out.println("Please, enter the secret code's length:");
-            input = scanner.nextInt();
-            if (input > 10) System.out.printf("Error: can't generate a secret number with a length of %d because there aren't enough unique digits.%n", input);
-        } while (input > 10);
+        System.out.println("Please, enter the secret code's length:");
+        int codeLength = scanner.nextInt();
+        System.out.println("Input the number of possible symbols in the code:");
+        int codeSymbols = scanner.nextInt();
+        Code code = new Code(codeLength, codeSymbols);
+        code.printCode(codeSymbols);
         System.out.println("Okay, let's start a game!");
-        Code code = new Code(input);
         while(!finished) {
             turn++;
             System.out.printf("Turn %d:%n", turn);
